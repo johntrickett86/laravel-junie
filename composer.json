@@ -1,0 +1,64 @@
+{
+    "name": "dcblogdev/laravel-junie",
+    "description": "Install pre-configured guides for Jetbrains Junie",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Carr",
+            "email": "dave@dcblog.dev",
+            "homepage": "https://dcblog.dev"
+        }
+    ],
+    "homepage": "https://github.com/dcblogdev/laravel-junie",
+    "keywords": [
+        "Laravel",
+        "Jetbrains",
+        "Junie"
+    ],
+    "require": {
+        "illuminate/support": "^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-type-coverage": "^3.3",
+        "laravel/pint": "^1.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dcblogdev\\Junie\\": "src/",
+            "Dcblogdev\\Junie\\Tests\\": "tests"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dcblogdev\\Junie\\JunieServiceProvider"
+            ],
+            "aliases": {
+                "Junie": "Dcblogdev\\Junie\\Facades\\Junie"
+            }
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "lint": "vendor/bin/pint",
+        "test": "vendor/bin/pest --parallel",
+        "type-coverage": "vendor/bin/pest --coverage",
+        "test-coverage": "vendor/bin/pest --type-coverage",
+        "check": [
+            "@lint",
+            "@test-coverage",
+            "@type-coverage"
+        ]
+    }
+}
