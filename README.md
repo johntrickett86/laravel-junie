@@ -12,7 +12,6 @@ The package provides a simple command-line interface to install various guidelin
 
 ## Requirements
 
-- PHP 8.1 or higher
 - Laravel 12.0 or higher
 
 ## Installation
