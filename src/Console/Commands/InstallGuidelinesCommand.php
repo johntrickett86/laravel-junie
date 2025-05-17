@@ -4,33 +4,52 @@ namespace Dcblogdev\Junie\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Console\Input\InputOption;
+
+use function Laravel\Prompts\multiselect;
 
 class InstallGuidelinesCommand extends Command
 {
-    protected $signature = 'junie:install 
-                            {--all : Install all guideline documents}
-                            {--general : Install general guidelines}
-                            {--api : Install API guidelines}
-                            {--livewire : Install Livewire guidelines}
-                            {--testing : Install testing guidelines}
-                            {--frontend : Install frontend guidelines}
-                            {--modules : Install modular architecture guidelines}';
+    protected $name = 'junie:install';
 
     protected $description = 'Install selected guideline documents';
+
+    /**
+     * Get the console command options.
+     */
+    protected function getOptions(): array
+    {
+        $options = [
+            ['all', null, InputOption::VALUE_NONE, 'Install all guidelines'],
+        ];
+
+        $configDocuments = config('junie.documents', []);
+
+        foreach ($configDocuments as $key => $document) {
+            if ($document['enabled'] ?? false) {
+                $options[] = [$key, null, InputOption::VALUE_NONE, "Install {$document['name']}"];
+            }
+        }
+
+        return $options;
+    }
 
     public function handle(): void
     {
         // Determine which documents to install
         $installAll = $this->option('all');
 
-        $documents = [
-            'general' => $installAll || $this->option('general'),
-            'api' => $installAll || $this->option('api'),
-            'livewire' => $installAll || $this->option('livewire'),
-            'testing' => $installAll || $this->option('testing'),
-            'frontend' => $installAll || $this->option('frontend'),
-            'modules' => $installAll || $this->option('modules'),
-        ];
+        $documents = [];
+        $configDocuments = config('junie.documents', []);
+
+        foreach ($configDocuments as $key => $document) {
+            // Only consider enabled documents
+            if ($document['enabled'] ?? false) {
+                $documents[$key] = $installAll || $this->option($key);
+            } else {
+                $documents[$key] = false;
+            }
+        }
 
         // If no specific documents were selected, ask the user
         if (! $installAll && ! array_filter($documents)) {
@@ -45,19 +64,48 @@ class InstallGuidelinesCommand extends Command
 
     protected function promptForDocuments(): array
     {
-        return [
-            'general' => $this->confirm('Install general guidelines?', true),
-            'api' => $this->confirm('Install API guidelines?', false),
-            'livewire' => $this->confirm('Install Livewire guidelines?', false),
-            'testing' => $this->confirm('Install testing guidelines?', false),
-            'frontend' => $this->confirm('Install frontend guidelines?', false),
-            'modules' => $this->confirm('Install modular architecture guidelines?', false),
-        ];
+        $options = ['all' => 'All guidelines'];
+        $configDocuments = config('junie.documents', []);
+        $enabledDocuments = [];
+
+        foreach ($configDocuments as $key => $document) {
+            if ($document['enabled'] ?? false) {
+                $options[$key] = $document['name'];
+                $enabledDocuments[$key] = $document;
+            }
+        }
+
+        // Using Laravel Prompts multiselect function
+        $selected = multiselect(
+            'Which guidelines would you like to install?',
+            $options,
+            [],// default
+            5, // scroll
+            false, // required
+            null, // validate
+            'Use space to select, enter to confirm' // hint
+        );
+
+        $installAll = in_array('all', $selected);
+
+        $documents = [];
+
+        foreach ($configDocuments as $key => $document) {
+            // Only include enabled documents
+            if ($document['enabled'] ?? false) {
+                $documents[$key] = $installAll || in_array($key, $selected);
+            } else {
+                $documents[$key] = false;
+            }
+        }
+
+        return $documents;
     }
 
     protected function installDocuments(array $documents): void
     {
         $outputPath = config('junie.output_path', '.junie');
+        $configDocuments = config('junie.documents', []);
 
         // Create an output directory if it doesn't exist
         if (! File::isDirectory($outputPath)) {
@@ -66,12 +114,13 @@ class InstallGuidelinesCommand extends Command
 
         // Copy selected documents
         foreach ($documents as $document => $install) {
-            if ($install) {
-                $source = __DIR__.'/../../resources/docs/'.$document.'.md';
-                $destination = base_path($outputPath.'/'.$document.'.md');
+            if ($install && isset($configDocuments[$document]) && ($configDocuments[$document]['enabled'] ?? false)) {
+                $documentPath = $configDocuments[$document]['path'] ?? $document.'.md';
+                $source = __DIR__.'/../../docs/'.$documentPath;
+                $destination = base_path($outputPath.'/'.$documentPath);
 
                 File::copy($source, $destination);
-                $this->line("Installed <info>{$document}</info>");
+                $this->line("Installed <info>{$configDocuments[$document]['name']}</info>");
             }
         }
 
@@ -83,11 +132,14 @@ class InstallGuidelinesCommand extends Command
     {
         $content = "# Laravel Guidelines\n\n";
         $content .= "## Available Guidelines\n\n";
+        $configDocuments = config('junie.documents', []);
 
         foreach ($documents as $document => $installed) {
-            if ($installed) {
-                $title = ucfirst($document);
-                $content .= "- [{$title} Guidelines]({$document}.md)\n";
+            if ($installed && isset($configDocuments[$document]) && ($configDocuments[$document]['enabled'] ?? false)) {
+                $documentConfig = $configDocuments[$document];
+                $title = $documentConfig['name'];
+                $path = $documentConfig['path'] ?? $document.'.md';
+                $content .= "- [{$title}]({$path})\n";
             }
         }
 
