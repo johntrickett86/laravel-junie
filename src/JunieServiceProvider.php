@@ -1,8 +1,8 @@
 <?php
 
-namespace Dcblogdev\Junie;
+namespace johntrickett86\Junie;
 
-use Dcblogdev\Junie\Console\Commands\InstallGuidelinesCommand;
+use johntrickett86\Junie\Console\Commands\InstallGuidelinesCommand;
 use Illuminate\Support\ServiceProvider;
 
 class JunieServiceProvider extends ServiceProvider

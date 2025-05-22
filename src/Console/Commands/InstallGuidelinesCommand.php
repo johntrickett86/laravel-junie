@@ -1,6 +1,6 @@
 <?php
 
-namespace Dcblogdev\Junie\Console\Commands;
+namespace johntrickett86\Junie\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;

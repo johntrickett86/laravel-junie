@@ -1,8 +1,8 @@
 <?php
 
-namespace Dcblogdev\Junie\Tests;
+namespace johntrickett86\Junie\Tests;
 
-use Dcblogdev\Junie\JunieServiceProvider;
+use johntrickett86\Junie\JunieServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra

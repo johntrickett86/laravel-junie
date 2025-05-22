@@ -1,10 +1,13 @@
 # Laravel Junie
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/dcblogdev/laravel-junie.svg?style=flat-square)](https://packagist.org/packages/dcblogdev/laravel-junie)
-[![Total Downloads](https://img.shields.io/packagist/dt/dcblogdev/laravel-junie.svg?style=flat-square)](https://packagist.org/packages/dcblogdev/laravel-junie)
-[![License](https://img.shields.io/packagist/l/dcblogdev/laravel-junie.svg?style=flat-square)](https://packagist.org/packages/dcblogdev/laravel-junie)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/johntrickett86/laravel-junie.svg?style=flat-square)](https://packagist.org/packages/johntrickett86/laravel-junie)
+[![Total Downloads](https://img.shields.io/packagist/dt/johntrickett86/laravel-junie.svg?style=flat-square)](https://packagist.org/packages/johntrickett86/laravel-junie)
+[![License](https://img.shields.io/packagist/l/johntrickett86/laravel-junie.svg?style=flat-square)](https://packagist.org/packages/johntrickett86/laravel-junie)
 
 ## Introduction
+
+> [!NOTE]  
+> This is a fork of [laravel-junie](https://github.com/dcblogdev/laravel-junie) by [David Carr](https://dcblog.dev/). I have modified for my own personal projects. If you find this or the original package useful, please consider [sponsoring David](https://github.com/sponsors/dcblogdev).
 
 Laravel Junie is a package that allows you to easily install pre-configured guideline documents for Jetbrains Junie in your Laravel application. These guidelines can help your team maintain consistent coding standards and best practices.
 
@@ -19,7 +22,7 @@ The package provides a simple command-line interface to install various guidelin
 You can install the package via composer:
 
 ```bash
-composer require dcblogdev/laravel-junie
+composer require johntrickett86/laravel-junie
 ```
 
 The package will automatically register its service provider.
